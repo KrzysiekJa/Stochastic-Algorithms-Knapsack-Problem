@@ -10,6 +10,8 @@ Auxiliary Space: O(W) As we are using 1-D array instead of 2-D array.
 
 from decorator import bench
 
+
+
 @bench
 def knapSack(W, wt, val, n):
     dp = [0 for i in range(W+1)]  # Making the dp array
@@ -24,39 +26,31 @@ def knapSack(W, wt, val, n):
     return dp[W]  # returning the maximum value of knapsack
  
  
-# driver code
-val = [60, 100, 120 ]
-wt = [10, 20, 30 ]
-W = 50
-n = len(val)
-
-#print("Sec : "+ str(knapSack(W, wt, val, n)))
-
 
 import random
-
+@bench
 def test_Knapsack():
     val = []
     wt = []
     W = 50
-    
-    for i in range(1,8):
+    ti = []
+    sz = []
+    for i in range(1,6):
         k = 10**i
         for j in range(k,k*10,k*10):
             val = []
             wt = []
+            sz.append(j)
             for t in range(0,j):
                 val.append(random.randint(0,j))
                 wt.append(random.randint(0,j)%W)
-            #print(val)
-            #print(wt)
-            print("Sec : "+ str(knapSack(W, wt, val, n)))
-            print("\n\n")
+            ti.append(knapSack(W, wt, val, j))
+    res = {'size':sz,'time':ti}
+    return res
+                   
+print(test_Knapsack())
 
-         
-test_Knapsack()  
-
-
+    
 
    
 
