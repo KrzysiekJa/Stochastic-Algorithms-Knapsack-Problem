@@ -149,17 +149,10 @@ def next_generation(population: List[Individual]) -> List[Individual]:
                 children = parents
 
         if (len(children) == 2):
-            if((children[0].weight() <= MAX_KNAPSACK_WEIGHT) and (children[1].weight() <= MAX_KNAPSACK_WEIGHT)):
-                next_gen.extend(children)
-            else:
-                #print("weight trop gros -> enfants rejetés")
-                pass
-            
-            if(children[0].fitness() + children[1].fitness() >= parents[0].fitness() + parents[1].fitness()):
-                next_gen.extend(children)
-            else:
-                pass
-                #print("moins bien que les parents -> enfants rejetés")
+            if not (children[0].weight() <= MAX_KNAPSACK_WEIGHT) and (children[1].weight() <= MAX_KNAPSACK_WEIGHT): continue
+            if not ((children[0].fitness() + children[1].fitness()) >= (parents[0].fitness() + parents[1].fitness())): continue
+            next_gen.extend(children)
+                
             
     next_gen = sorted(next_gen, key=lambda i: i.fitness(), reverse=True)
     index2 = next_gen[0].fitness()
@@ -175,7 +168,7 @@ def next_generation(population: List[Individual]) -> List[Individual]:
 
 def print_generation(population: List[Individual]):
     for individual in population:
-        print(individual.bits, individual.fitness(), individual.weight())
+        print(individual.bits, individual.weight(), individual.fitness())
     print()
     print("Average fitness", sum([x.fitness() for x in population])/len(population))
     print("-" * 32)
