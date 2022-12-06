@@ -10,8 +10,8 @@ if __name__ == '__main__':
         y.append(solution.fitness())
         solutions.append(solution)
 
-    print_generation(solutions, True, False)
-    # plt.figure()
-    # plt.plot(x,y)
-    # plt.show()
+    print_generation(solutions)
+    plt.figure()
+    plt.plot(x,y)
+    plt.show()
     

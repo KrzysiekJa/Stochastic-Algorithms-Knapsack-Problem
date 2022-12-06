@@ -1,6 +1,69 @@
 import random
 from typing import List
-from classes import Item, Individual, items, MAX_KNAPSACK_WEIGHT, MUTATION_RATE, CROSSOVER_RATE, REPRODUCTION_RATE
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+class Item:
+    def __init__(self, name, weight, value):
+        self.name = name
+        self.weight = weight
+        self.value = value
+
+
+class Individual:
+    def __init__(self, bits: List[int]):
+        self.bits = bits
+    
+    def __str__(self):
+        return repr(self.bits)
+
+    def __hash__(self):
+        return hash(str(self.bits))
+    
+    def fitness(self) -> float:
+        """
+        total_value = sum([
+            bit * item.value
+            for item, bit in zip(items, self.bits)
+        ])
+
+        total_weight = sum([
+            bit * item.weight
+            for item, bit in zip(items, self.bits)
+        ])
+
+        if total_weight <= MAX_KNAPSACK_WEIGHT:
+            return total_value
+        
+        return 0
+        """
+        total_value = 0
+        for i in range(len(self.bits)):
+            total_value += self.bits[i]*items[i].value
+        return total_value
+    
+    def weight(self) -> float:
+        total_weight = sum([
+            bit * item.weight
+            for item, bit in zip(items, self.bits)
+        ])
+        return total_weight
+        
+
+
+MAX_KNAPSACK_WEIGHT = 20
+CROSSOVER_RATE = 0.53
+MUTATION_RATE = 0.013
+REPRODUCTION_RATE = 0.15
+
+items = [
+    Item("A", 7, 9),
+    Item("B", 4, 3),
+    Item("C", 11, 10),
+    Item("D", 8, 15),
+    Item("E", 6, 4)
+]
 
 
 def generate_initial_population(count=6) -> List[Individual]:
@@ -30,13 +93,13 @@ def selection(population: List[Individual]) -> List[Individual]:
     # get two fit parents for the next steps of evolution
 
     # tournament between first and second
-    if population[0].fitness() > population[1].fitness():
+    if population[0].fitness() >= population[1].fitness():
         parents.append(population[0])
     else:
         parents.append(population[1])
     
     # tournament between third and fourth
-    if population[2].fitness() > population[3].fitness():
+    if population[2].fitness() >= population[3].fitness():
         parents.append(population[2])
     else:
         parents.append(population[3])
@@ -63,6 +126,8 @@ def mutate(individuals: List[Individual]) -> List[Individual]:
 
 def next_generation(population: List[Individual]) -> List[Individual]:
     next_gen = []
+    population = sorted(population, key=lambda i: i.fitness(), reverse=True)
+    index1 = population[0].fitness()
     while len(next_gen) < len(population):
         children = []
 
@@ -80,33 +145,41 @@ def next_generation(population: List[Individual]) -> List[Individual]:
             # mutation
             if random.random() < MUTATION_RATE:
                 mutate(children)
+            else:
+                children = parents
 
-        next_gen.extend(children)
+        if (len(children) == 2):
+            if((children[0].weight() <= MAX_KNAPSACK_WEIGHT) and (children[1].weight() <= MAX_KNAPSACK_WEIGHT)):
+                next_gen.extend(children)
+            else:
+                #print("weight trop gros -> enfants rejetés")
+                pass
+            
+            if(children[0].fitness() + children[1].fitness() >= parents[0].fitness() + parents[1].fitness()):
+                next_gen.extend(children)
+            else:
+                pass
+                #print("moins bien que les parents -> enfants rejetés")
+            
+    next_gen = sorted(next_gen, key=lambda i: i.fitness(), reverse=True)
+    index2 = next_gen[0].fitness()
+    
+    if index2 > index1 :
+        #print("gen ameliorée")
+        return next_gen[:len(population)]
+    else :
+        #print("gen gardée")
+        return population
+    
 
-    return next_gen[:len(population)]
 
+def print_generation(population: List[Individual]):
+    for individual in population:
+        print(individual.bits, individual.fitness(), individual.weight())
+    print()
+    print("Average fitness", sum([x.fitness() for x in population])/len(population))
+    print("-" * 32)
 
-def print_generation(population: List[Individual], sorted: bool = False, detailed: bool = False):
-    if sorted:
-        population.sort(key=lambda x: x.fitness())
-    if not detailed:
-        for individual in population:
-            print(individual.bits, individual.fitness())
-        print()
-        print("Average fitness", sum([x.fitness() for x in population])/len(population))
-        print("-" * 32)
-    else:
-        accepted = list(filter(lambda x: x.fitness() != 0,population))
-        rejected = list(filter(lambda x: x.fitness() == 0,population))
-        print("=" * 5 + " Accepted solutions " + "="*5)
-        for element in accepted:
-            print(element.bits, element.fitness())
-        print("=" * 5 + " Rejected solutions " + "="*5)
-        for element in rejected:
-            print(element.bits, element.fitness())
-        print()
-        print("Average fitness", sum([x.fitness() for x in accepted])/len(accepted))
-        print("-" * 32)       
 
 def average_fitness(population: List[Individual]) -> float:
     return sum([i.fitness() for i in population]) / len(population)
@@ -117,10 +190,23 @@ def solve_knapsack() -> Individual:
 
     avg_fitnesses = []
 
-    for _ in range(500):
+    for _ in range(200):
         avg_fitnesses.append(average_fitness(population))
         population = next_generation(population)
 
     population = sorted(population, key=lambda i: i.fitness(), reverse=True)
     return population[0]
 
+
+if __name__ == '__main__':
+    
+    tab1 = [p for p in range(0, 50)]
+    tab2 = [p for p in range(0, 50)]
+    for i in range(50):
+        solution = solve_knapsack()
+        tab1[i] = solution.fitness()
+        print(solution, solution.fitness())
+        
+        
+    plt.plot(tab2, tab1)
+    plt.show() # affiche la figure à l'écran
