@@ -154,9 +154,12 @@ def next_generation(population: List[Individual]) -> List[Individual]:
 
         if (len(children) == 2):
             if not ((children[0].weight() <= MAX_KNAPSACK_WEIGHT) and (children[1].weight() <= MAX_KNAPSACK_WEIGHT)):
+                # print("Childrens rejetés",children[0].weight(), children[1].weight())
                 continue
             if not ((children[0].fitness() + children[1].fitness()) >= (parents[0].fitness() + parents[1].fitness())):
+                # print("Childrens rejetés",children[0].weight(), children[1].weight())
                 continue
+            print("Childrens passés",children[0].weight(), children[1].weight())
             next_gen.extend(children)
                 
     next_gen = sorted(next_gen, key=lambda i: i.fitness(), reverse=True)
