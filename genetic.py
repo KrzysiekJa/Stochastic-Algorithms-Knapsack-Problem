@@ -55,7 +55,7 @@ class Individual:
 MAX_KNAPSACK_WEIGHT = 60
 CROSSOVER_RATE = 0.53
 MUTATION_RATE = 0.013
-REPRODUCTION_RATE = 0.15
+REPRODUCTION_RATE = 0.70
 
 items = [
     Item("A", 7, 9),
@@ -197,7 +197,7 @@ def solve_knapsack() -> Individual:
 
     avg_fitnesses = []
 
-    for _ in range(500):
+    for _ in range(200):
         avg_fitnesses.append(average_fitness(population))
         population = next_generation(population)
 
