@@ -57,22 +57,33 @@ def solve_pso_knapsack(W, wt, val, n,s):
 
     print(swarm)
     print("\n\n")
-
+    
+    
     for it in range(0,3):
         for i in range (0,s):
             
+            # checking PLBEST
+            if fitness_function(swarm[i][X],wt,val,W) > fitness_function(swarm[i][PLBEST],wt,val,W):
+                for d in range(n):
+                    swarm[i][PLBEST][d] = swarm[i][X][d]
+            
+            # checking glb
+            if fitness_function(swarm[i][PLBEST],wt,val,W) > fitness_function(glb,wt,val,W):
+                for d in range(n):
+                    glb[d] = swarm[i][PLBEST][d]
+            
             ro = []
-            for j in range(0,n):
+            for j in range(n):
                 ro.append(random.randint(0,1))
 
-            for d in range(0,n-1):
-                swarm[i][VELOCITY_Y][d] = C1* random.random()*(swarm[i][PLBEST][d]-swarm[i][X][d])+C2*random.random()*(glb[d]-swarm[i][X][d])
+            for d in range(n):
+                swarm[i][VELOCITY_Y][d] += C1 * random.random() * (swarm[i][PLBEST][d]-swarm[i][X][d])  + C2 * random.random() * (glb[d]-swarm[i][X][d])
                 print(swarm[i][VELOCITY_Y][d])
                 # ro < s(v_i)
                 # Change the logic of this part 
 
                 
-                if(ro[d]<sigmoid(swarm[i][VELOCITY_Y][d])):
+                if(ro[d] < sigmoid(swarm[i][VELOCITY_Y][d])):
                     swarm[i][X][d]=1
                 else:
                     swarm[i][X][d]=0
@@ -88,7 +99,7 @@ def solve_pso_knapsack(W, wt, val, n,s):
                 k = random.randrange(n)
                 swarm[i][X][k] = glb[k]
             
-            print(">> ", fitness_function(swarm[i][PLBEST],wt,val,W))
+            print( ">> ", fitness_function(glb,wt,val,W) )
     
     print(swarm)
 
