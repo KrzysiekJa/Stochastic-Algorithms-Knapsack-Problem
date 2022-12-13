@@ -31,3 +31,21 @@ if __name__ == '__main__':
     fig.tight_layout()
     plt.show()
     
+    """
+    y = []
+    weights = []
+    x = [x for x in range(200)]
+    solutions = []
+    for _ in range(200):
+        solution = solve_knapsack()
+        y.append(solution.fitness())
+        weights.append(solution.weight())
+        solutions.append(solution)
+
+    print_generation(solutions)
+    plt.figure()
+    plt.plot(x,y)
+    plt.plot(x, weights)
+    plt.show()
+    """
+    
