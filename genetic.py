@@ -52,7 +52,7 @@ class Individual:
         
 
 
-MAX_KNAPSACK_WEIGHT = 30
+MAX_KNAPSACK_WEIGHT = 60
 CROSSOVER_RATE = 0.53
 MUTATION_RATE = 0.013
 REPRODUCTION_RATE = 0.15
@@ -62,7 +62,13 @@ items = [
     Item("B", 4, 3),
     Item("C", 11, 10),
     Item("D", 8, 15),
-    Item("E", 6, 4)
+    Item("E", 6, 4),
+    Item("F", 9, 5),
+    Item("G", 4, 3),
+    Item("H", 11, 10),
+    Item("I", 14, 18),
+    Item("J", 3, 7)
+    
 ]
 
 
@@ -154,12 +160,12 @@ def next_generation(population: List[Individual]) -> List[Individual]:
 
         if (len(children) == 2):
             if not ((children[0].weight() <= MAX_KNAPSACK_WEIGHT) and (children[1].weight() <= MAX_KNAPSACK_WEIGHT)):
-                # print("Childrens rejetés",children[0].weight(), children[1].weight())
+                #print("Childrens rejetés",children[0].weight(), children[1].weight())
                 continue
             if not ((children[0].fitness() + children[1].fitness()) >= (parents[0].fitness() + parents[1].fitness())):
-                # print("Childrens rejetés",children[0].weight(), children[1].weight())
+                #print("Childrens rejetés",children[0].weight(), children[1].weight())
                 continue
-            print("Childrens passés",children[0].weight(), children[1].weight())
+            #print("Childrens passés",children[0].weight(), children[1].weight())
             next_gen.extend(children)
                 
     next_gen = sorted(next_gen, key=lambda i: i.fitness(), reverse=True)
@@ -191,7 +197,7 @@ def solve_knapsack() -> Individual:
 
     avg_fitnesses = []
 
-    for _ in range(20):
+    for _ in range(500):
         avg_fitnesses.append(average_fitness(population))
         population = next_generation(population)
 
