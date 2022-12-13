@@ -76,6 +76,20 @@ def solve_pso_knapsack(W, wt, val, n,s):
                     swarm[i][X][d]=1
                 else:
                     swarm[i][X][d]=0
+            
+            # genetic mutations
+            nmut = random.randrange(n)
+            for j in range(nmut):
+                k = random.randrange(n)
+                swarm[i][X][k] = swarm[i][PLBEST][k]
+            
+            nmut = random.randrange(n)
+            for j in range(nmut):
+                k = random.randrange(n)
+                swarm[i][X][k] = glb[k]
+            
+            print(">> ", fitness_function(swarm[i][PLBEST],wt,val,W))
+    
     print(swarm)
 
 
