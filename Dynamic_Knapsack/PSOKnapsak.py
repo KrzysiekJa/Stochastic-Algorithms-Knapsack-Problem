@@ -22,6 +22,7 @@ def fitness_function(x,w,v,W):
         return 0
 
 def solve_pso_knapsack(W, wt, val, n,s):
+    epochs = 5
     swarm = []
     glb_value = -1
     glb = []
@@ -48,7 +49,7 @@ def solve_pso_knapsack(W, wt, val, n,s):
         tmp = fitness_function(temporary_i,wt,val,W)
         if(tmp>glb_value):
             glb_value = tmp
-            glb = temporary_i
+            glb = temporary_i[:] # !!!!! reference!
         
         velocity_i = [0]*n
         swarm.append((temporary_i,temporary_i,velocity_i))
@@ -58,9 +59,11 @@ def solve_pso_knapsack(W, wt, val, n,s):
     print(swarm)
     print("\n\n")
     
+    print( "## ", glb )
+    print( ">> ", fitness_function(glb,wt,val,W) )
     
-    for it in range(0,3):
-        for i in range (0,s):
+    for it in range(epochs):
+        for i in range(s):
             
             # checking PLBEST
             if fitness_function(swarm[i][X],wt,val,W) > fitness_function(swarm[i][PLBEST],wt,val,W):
@@ -71,6 +74,8 @@ def solve_pso_knapsack(W, wt, val, n,s):
             if fitness_function(swarm[i][PLBEST],wt,val,W) > fitness_function(glb,wt,val,W):
                 for d in range(n):
                     glb[d] = swarm[i][PLBEST][d]
+                print( "### ", glb )
+                print( ">>> ", fitness_function(glb,wt,val,W) )
             
             ro = []
             for j in range(n):
@@ -99,6 +104,7 @@ def solve_pso_knapsack(W, wt, val, n,s):
                 k = random.randrange(n)
                 swarm[i][X][k] = glb[k]
             
+            print( "## ", glb )
             print( ">> ", fitness_function(glb,wt,val,W) )
     
     print(swarm)
