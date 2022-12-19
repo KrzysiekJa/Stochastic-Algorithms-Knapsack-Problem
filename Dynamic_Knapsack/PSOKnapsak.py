@@ -21,6 +21,13 @@ def fitness_function(x,w,v,W):
     else:
         return 0
 
+def random_binary_list(n):
+    rand = []
+    for j in range(0,n):
+        rand.append(random.randint(0,1))
+    return rand
+
+
 def solve_pso_knapsack(W, wt, val, n,s):
     epochs = 5
     swarm = []
@@ -43,9 +50,7 @@ def solve_pso_knapsack(W, wt, val, n,s):
         # Random Generating the xi in the particles
         # Initializing the local minimum in the swarm
         # find the global solution inside the swarm
-        temporary_i = []
-        for j in range(0,n):
-            temporary_i.append(random.randint(0,1))
+        temporary_i = random_binary_list(n)
         tmp = fitness_function(temporary_i,wt,val,W)
         if(tmp>glb_value):
             glb_value = tmp
@@ -77,17 +82,13 @@ def solve_pso_knapsack(W, wt, val, n,s):
                 print( "### ", glb )
                 print( ">>> ", fitness_function(glb,wt,val,W) )
             
-            ro = []
-            for j in range(n):
-                ro.append(random.randint(0,1))
+            ro = random_binary_list(n)
 
             for d in range(n):
                 swarm[i][VELOCITY_Y][d] += C1 * random.random() * (swarm[i][PLBEST][d]-swarm[i][X][d])  + C2 * random.random() * (glb[d]-swarm[i][X][d])
                 print(swarm[i][VELOCITY_Y][d])
                 # ro < s(v_i)
                 # Change the logic of this part 
-
-                
                 if(ro[d] < sigmoid(swarm[i][VELOCITY_Y][d])):
                     swarm[i][X][d]=1
                 else:
@@ -111,4 +112,5 @@ def solve_pso_knapsack(W, wt, val, n,s):
 
 
 solve_pso_knapsack(10,[1,20,10,2,2],[5,100,10,100,1],5,2)
+
 
