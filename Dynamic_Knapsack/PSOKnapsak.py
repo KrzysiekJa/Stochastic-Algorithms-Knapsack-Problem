@@ -54,7 +54,7 @@ def solve_pso_knapsack(W, wt, val, n,s):
         tmp = fitness_function(temporary_i,wt,val,W)
         if(tmp>glb_value):
             glb_value = tmp
-            glb = temporary_i[:] # !!!!! reference!
+            glb = temporary_i[:]
         
         velocity_i = [0]*n
         swarm.append((temporary_i,temporary_i,velocity_i))
@@ -95,12 +95,12 @@ def solve_pso_knapsack(W, wt, val, n,s):
                     swarm[i][X][d]=0
             
             # genetic mutations
-            nmut = random.randrange(n)
+            nmut = random.randrange(n) + 1
             for j in range(nmut):
                 k = random.randrange(n)
                 swarm[i][X][k] = swarm[i][PLBEST][k]
             
-            nmut = random.randrange(n)
+            nmut = random.randrange(n) + 1
             for j in range(nmut):
                 k = random.randrange(n)
                 swarm[i][X][k] = glb[k]
