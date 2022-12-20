@@ -192,28 +192,33 @@ def average_fitness(population: List[Individual]) -> float:
     return sum([i.fitness() for i in population]) / len(population)
 
 
-def solve_knapsack() -> Individual:
+def solve_knapsack() -> tuple[Individual, List[float], List[float]]:
     population = generate_initial_population()
 
     avg_fitnesses = []
+    best_fitnesses = []
 
     for _ in range(200):
         avg_fitnesses.append(average_fitness(population))
+        population = sorted(population, key=lambda i: i.fitness(), reverse=True)
+        best_fitnesses.append(population[0].fitness())
         population = next_generation(population)
 
+
     population = sorted(population, key=lambda i: i.fitness(), reverse=True)
-    return population[0]
+    return (population[0], avg_fitnesses, best_fitnesses)
 
 
 if __name__ == '__main__':
     
-    tab1 = [p for p in range(0, 50)]
-    tab2 = [p for p in range(0, 50)]
-    for i in range(50):
-        solution = solve_knapsack()
-        tab1[i] = solution.fitness()
-        print(solution, solution.fitness())
-        
-        
-    plt.plot(tab2, tab1)
+    #for i in range(1):
+    solution, avg, best_fitness = solve_knapsack()
+    # tab1[i] = solution.fitness()
+    # print(solution, solution.fitness())
+    # print(avg)
+    # print(best_fitness)
+    x = [x for x in range(len(avg))]
+    plt.figure()
+    plt.plot(x, avg)
+    plt.plot(x, best_fitness)
     plt.show() # affiche la figure à l'écran
