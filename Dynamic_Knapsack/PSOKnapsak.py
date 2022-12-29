@@ -2,8 +2,8 @@ import random
 import matplotlib as mp 
 import numpy as np
 import sys
+from decorator import bench
 
-print(np.__version__)
 
 W=5
 wt = [1,2,10,200,3]
@@ -15,6 +15,7 @@ val = [2,5,6,1,100]
 # n = size of the objects
 # s = size of particles
 
+#introduce a flexible penality, exponential scaling, take the exponetial value instead the normal fitness it should grow faster
 def fitness_function(x,w,v,W):
     if(np.dot(x,w)<=W):
         return np.dot(x,v)
@@ -28,7 +29,7 @@ def random_binary_list(n):
     return rand
 
 
-def solve_pso_knapsack(W, wt, val, n,s):
+def solve_pso_knapsack(W, wt, val, n, n_particles):
     epochs = 5
     swarm = []
     glb_value = -1
@@ -44,7 +45,7 @@ def solve_pso_knapsack(W, wt, val, n,s):
 
 
     #particles has x , p, velocity
-    for i in range(0,s):
+    for i in range(n_particles):
         pi = ([],[],[])
 
         # Random Generating the xi in the particles
@@ -61,14 +62,14 @@ def solve_pso_knapsack(W, wt, val, n,s):
     
     sigmoid = lambda x :  1/(1 + np.exp(-x))
 
-    print(swarm)
-    print("\n\n")
+    #print(swarm)
+    #print("\n\n")
     
-    print( "## ", glb )
-    print( ">> ", fitness_function(glb,wt,val,W) )
+    #print( "## ", glb )
+    #print( ">> ", fitness_function(glb,wt,val,W) )
     
     for it in range(epochs):
-        for i in range(s):
+        for i in range(n_particles):
             
             # checking PLBEST
             if fitness_function(swarm[i][X],wt,val,W) > fitness_function(swarm[i][PLBEST],wt,val,W):
@@ -79,16 +80,15 @@ def solve_pso_knapsack(W, wt, val, n,s):
             if fitness_function(swarm[i][PLBEST],wt,val,W) > fitness_function(glb,wt,val,W):
                 for d in range(n):
                     glb[d] = swarm[i][PLBEST][d]
-                print( "### ", glb )
-                print( ">>> ", fitness_function(glb,wt,val,W) )
+                #print( "### ", glb )
+                #print( ">>> ", fitness_function(glb,wt,val,W) )
             
             ro = random_binary_list(n)
 
             for d in range(n):
                 swarm[i][VELOCITY_Y][d] += C1 * random.random() * (swarm[i][PLBEST][d]-swarm[i][X][d])  + C2 * random.random() * (glb[d]-swarm[i][X][d])
-                print(swarm[i][VELOCITY_Y][d])
-                # ro < s(v_i)
-                # Change the logic of this part 
+                #print(swarm[i][VELOCITY_Y][d])
+                
                 if(ro[d] < sigmoid(swarm[i][VELOCITY_Y][d])):
                     swarm[i][X][d]=1
                 else:
@@ -105,12 +105,34 @@ def solve_pso_knapsack(W, wt, val, n,s):
                 k = random.randrange(n)
                 swarm[i][X][k] = glb[k]
             
-            print( "## ", glb )
-            print( ">> ", fitness_function(glb,wt,val,W) )
+            #print( "## ", glb )
+            #print( ">> ", fitness_function(glb,wt,val,W) )
     
-    print(swarm)
+    #print(swarm)
 
 
-solve_pso_knapsack(10,[1,20,10,2,2],[5,100,10,100,1],5,2)
+#solve_pso_knapsack(10,[1,20,10,2,2],[5,100,10,100,1],5,2)
 
+
+@bench
+def test_Knapsack():
+    val = []
+    wt = []
+    W = 50
+    ti = []
+    sz = []
+    for i in range(1,6):
+        k = 10**i
+        for j in range(k,k*10,k*10):
+            val = []
+            wt = []
+            sz.append(j)
+            for t in range(0,j):
+                val.append(random.randint(0,j))
+                wt.append(random.randint(0,j)%W)
+            ti.append(solve_pso_knapsack(W, wt, val, j, int( np.sqrt(k)) ))
+    res = {'size':sz,'time':ti}
+    return res
+                   
+print(test_Knapsack())
 
