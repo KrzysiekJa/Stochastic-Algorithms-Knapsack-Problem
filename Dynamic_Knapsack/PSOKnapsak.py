@@ -111,7 +111,7 @@ def solve_pso_knapsack(W, wt, val, n, n_particles):
     #print(swarm)
 
 
-#solve_pso_knapsack(10,[1,20,10,2,2],[5,100,10,100,1],5,2)
+solve_pso_knapsack(10,[1,20,10,2,2],[5,100,10,100,1],5,2)
 
 
 @bench
@@ -134,5 +134,5 @@ def test_Knapsack():
     res = {'size':sz,'time':ti}
     return res
                    
-print(test_Knapsack())
+#print(test_Knapsack())
 
