@@ -5,7 +5,7 @@ import sys
 from decorator import bench
 
 
-W=5
+W = 5
 wt = [1,2,10,200,3]
 val = [2,5,6,1,100]
 
@@ -16,24 +16,19 @@ val = [2,5,6,1,100]
 # s = size of particles
 
 #introduce a flexible penality, exponential scaling, take the exponetial value instead the normal fitness it should grow faster
-def fitness_function(x,w,v,W):
-    if(np.dot(x,w)<=W):
+def fitness_function( x, w, v, W ):
+    if( np.dot(x,w) <= W ):
         return np.dot(x,v)
     else:
         return 0
 
-def random_binary_list(n):
-    rand = []
-    for j in range(0,n):
-        rand.append(random.randint(0,1))
-    return rand
 
-
-def solve_pso_knapsack(W, wt, val, n, n_particles):
+def solve_pso_knapsack( W, wt, vals, n, n_particles ):
     epochs = 5
     swarm = []
-    glb_value = -1
-    glb = []
+    global_best_val = -1
+    global_best = np.zeros(n, dtype=np.int8)
+    sigmoid = lambda x :  1/(1 + np.exp(-x))
 
     X=0
     PLBEST =1
@@ -43,53 +38,50 @@ def solve_pso_knapsack(W, wt, val, n, n_particles):
     C1 = 2.05
     C2 = 2.05
 
-
-    #particles has x , p, velocity
-    for i in range(n_particles):
+    
+    # Random Generating the xi in the particles
+    # Initializing the local minimum in the swarm
+    # find the global solution inside the swarm
+    for _ in range(n_particles):
+        # particles has x , p, velocity
         pi = ([],[],[])
 
-        # Random Generating the xi in the particles
-        # Initializing the local minimum in the swarm
-        # find the global solution inside the swarm
-        temporary_i = random_binary_list(n)
-        tmp = fitness_function(temporary_i,wt,val,W)
-        if(tmp>glb_value):
-            glb_value = tmp
-            glb = temporary_i[:]
+        position_i = np.random.randint( 2, dtype=np.int8, size=n ) # random binary array
+        ## temporary_i = random_binary_list(n)
+        tmp_val = fitness_function( position_i, wt, vals, W )
         
-        velocity_i = [0]*n
-        swarm.append((temporary_i,temporary_i,velocity_i))
+        if( tmp_val > global_best_val ):
+            global_best_val = tmp_val
+            np.copyto( global_best, position_i ) # syntax: np.copyto(dst, src)
+        
+        velocity_i = np.zeros(n)
+        swarm.append( (position_i, position_i, velocity_i) )
     
-    sigmoid = lambda x :  1/(1 + np.exp(-x))
-
-    #print(swarm)
-    #print("\n\n")
+    print( ">> ", global_best_val )
+    print( "## ", global_best )
     
-    #print( "## ", glb )
-    #print( ">> ", fitness_function(glb,wt,val,W) )
-    
-    for it in range(epochs):
+    for _ in range(epochs):
         for i in range(n_particles):
             
             # checking PLBEST
-            if fitness_function(swarm[i][X],wt,val,W) > fitness_function(swarm[i][PLBEST],wt,val,W):
-                for d in range(n):
-                    swarm[i][PLBEST][d] = swarm[i][X][d]
+            if fitness_function( swarm[i][X], wt, vals, W ) > fitness_function( swarm[i][PLBEST], wt, vals, W ):
+                np.copyto( swarm[i][PLBEST], swarm[i][X] )
+                # for d in range(n):
+                #     swarm[i][PLBEST][d] = swarm[i][X][d]
             
-            # checking glb
-            if fitness_function(swarm[i][PLBEST],wt,val,W) > fitness_function(glb,wt,val,W):
-                for d in range(n):
-                    glb[d] = swarm[i][PLBEST][d]
-                #print( "### ", glb )
-                #print( ">>> ", fitness_function(glb,wt,val,W) )
+            # checking global_best
+            if fitness_function( swarm[i][PLBEST], wt, vals, W ) > global_best_val:
+                np.copyto( global_best, swarm[i][PLBEST] )
+                # for d in range(n):
+                #     global_best[d] = swarm[i][PLBEST][d]
+                global_best_val = fitness_function( global_best, wt, vals, W ) # update
             
-            ro = random_binary_list(n)
+            ro = np.random.randint( 2, dtype=np.int8, size=n ) # random binary array
 
             for d in range(n):
-                swarm[i][VELOCITY_Y][d] += C1 * random.random() * (swarm[i][PLBEST][d]-swarm[i][X][d])  + C2 * random.random() * (glb[d]-swarm[i][X][d])
-                #print(swarm[i][VELOCITY_Y][d])
+                swarm[i][VELOCITY_Y][d] += C1 * random.random() * (swarm[i][PLBEST][d]-swarm[i][X][d])  + C2 * random.random() * (global_best[d]-swarm[i][X][d])
                 
-                if(ro[d] < sigmoid(swarm[i][VELOCITY_Y][d])):
+                if ro[d] < sigmoid( swarm[i][VELOCITY_Y][d] ):
                     swarm[i][X][d]=1
                 else:
                     swarm[i][X][d]=0
@@ -103,15 +95,13 @@ def solve_pso_knapsack(W, wt, val, n, n_particles):
             nmut = random.randrange(n) + 1
             for j in range(nmut):
                 k = random.randrange(n)
-                swarm[i][X][k] = glb[k]
+                swarm[i][X][k] = global_best[k]
             
-            #print( "## ", glb )
-            #print( ">> ", fitness_function(glb,wt,val,W) )
-    
-    #print(swarm)
+            print( ">> ", global_best_val )
+            print( "## ", global_best )
 
 
-solve_pso_knapsack(10,[1,20,10,2,2],[5,100,10,100,1],5,2)
+solve_pso_knapsack( 10, [1,20,10,2,2], [5,100,10,100,1], 5, 2 )
 
 
 @bench
