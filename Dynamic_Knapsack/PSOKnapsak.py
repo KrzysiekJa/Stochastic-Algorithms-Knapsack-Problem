@@ -46,7 +46,7 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
     print( "## ", GLOBAL_BEST )
     
     for _ in range(epochs):
-        for i, particle in enumerate(swarm):
+        for particle in swarm:
             
             # checking P_LOCAL_BEST
             if fitness_function( particle['POSITION'], wt, val, W ) > fitness_function( particle['P_LOCAL_BEST'], wt, val, W ):
