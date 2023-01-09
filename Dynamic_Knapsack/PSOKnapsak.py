@@ -59,10 +59,11 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
             
             # random() generates values from range of <0,1>
             particle['VELOCITY'] += C1 * random() * (particle['P_LOCAL_BEST']-particle['POSITION']) + C2 * random() * (GLOBAL_BEST-particle['POSITION'])
+            particle['VELOCITY'] = sigmoid(particle['VELOCITY'])
             
             ro = np.random.randint( 2, dtype=np.int8, size=n ) # random binary array
             
-            particle['POSITION'] = np.where( ro < sigmoid(particle['VELOCITY']), 1, 0 )
+            particle['POSITION'] = np.where( ro < particle['VELOCITY'], 1, 0 )
             
             # genetic mutations
             matation_arr = np.full(n, False, dtype=bool)
