@@ -77,15 +77,15 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
             np.random.shuffle( matation_arr )
             particle['POSITION'] = np.where( matation_arr, GLOBAL_BEST, particle['POSITION'] )
             
-    print( ">> ", GLOBAL_BEST_VAL )
-    print( "## ", GLOBAL_BEST )
+    #print( ">> ", GLOBAL_BEST_VAL )
+    #print( "## ", GLOBAL_BEST )
     return GLOBAL_BEST_VAL
 
 W = 6
 wt = [1,2,10,200,3]
 val = [2,5,6,1,100]
 
-print(solve_pso_knapsack( W, wt, val, 5,5,4))
+#print(solve_pso_knapsack( W, wt, val, 5,5,4))
 solve_pso_knapsack( 10, [1,20,10,2,2], [5,100,10,100,1], 5, 2 )
 
 

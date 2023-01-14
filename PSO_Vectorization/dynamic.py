@@ -9,7 +9,7 @@ Auxiliary Space: O(W) As we are using 1-D array instead of 2-D array.
 '''
 
 from decorator import bench
-
+import numpy as np
 
 
 @bench
@@ -25,6 +25,16 @@ def knapSack(W, wt, val, n):
     
     return dp[W]  # returning the maximum value of knapsack
  
+
+@bench
+def knapSack_numpy(W, wt, val, n):
+    dp = np.zeros(W+1, dtype=int)  # Creating the dp array using numpy
+    for i in range(1, n+1): 
+        for w in range(W, 0, -1):
+            if wt[i-1] <= w:
+                dp[w] = max(dp[w], dp[w-wt[i-1]]+val[i-1])
+    return dp[W]
+
  
 
 import random
@@ -53,8 +63,9 @@ def test_Knapsack():
 W = 6
 wt = [1,2,10,200,3]
 val = [2,5,6,1,100]
-print(knapSack( W, wt, val,len(wt)))
-knapSack( 10, [1,20,10,2,2], [5,100,10,100,1],5)
+#print(knapSack( W, wt, val,len(wt)))
+
+#knapSack( 10, [1,20,10,2,2], [5,100,10,100,1],5)
 
    
 
