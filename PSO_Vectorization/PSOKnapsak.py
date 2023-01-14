@@ -1,5 +1,5 @@
 import sys
-from random import random, randrange
+from random import  random,randrange
 import numpy as np
 from decorator import bench
 
@@ -22,6 +22,7 @@ def sigmoid( x ):
     n = number of the objects
     n_particles = number of particles
 '''
+@bench
 def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2.0):
     particle_params = ['POSITION', 'P_LOCAL_BEST', 'VELOCITY']
     GLOBAL_BEST_VAL = -1
@@ -42,8 +43,8 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
         # particles has position, best_pos, velocity
         swarm.append( dict( zip(particle_params, [position, position, np.random.rand(n)]) ) )
     
-    print( ">> ", GLOBAL_BEST_VAL )
-    print( "## ", GLOBAL_BEST )
+    #print( ">> ", GLOBAL_BEST_VAL )
+    #print( "## ", GLOBAL_BEST )
     
     for _ in range(epochs):
         for particle in swarm:
@@ -76,34 +77,36 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
             np.random.shuffle( matation_arr )
             particle['POSITION'] = np.where( matation_arr, GLOBAL_BEST, particle['POSITION'] )
             
-            print( ">> ", GLOBAL_BEST_VAL )
-            print( "## ", GLOBAL_BEST )
-
+    print( ">> ", GLOBAL_BEST_VAL )
+    print( "## ", GLOBAL_BEST )
+    return GLOBAL_BEST_VAL
 
 W = 6
 wt = [1,2,10,200,3]
 val = [2,5,6,1,100]
-solve_pso_knapsack( W, wt, val, 5, 4, 3 )
+
+print(solve_pso_knapsack( W, wt, val, 5,5,4))
 solve_pso_knapsack( 10, [1,20,10,2,2], [5,100,10,100,1], 5, 2 )
 
 
-@bench
+
 def test_Knapsack():
     val = []
     wt = []
     W = 50
     ti = []
     sz = []
-    for i in range(1,6):
+    for i in range(1,3):
         k = 10**i
         for j in range(k,k*10,k*10):
             val = []
             wt = []
             sz.append(j)
             for t in range(0,j):
-                val.append(random.randint(0,j))
-                wt.append(random.randint(0,j)%W)
-            ti.append(solve_pso_knapsack(W, wt, val, j, int( np.sqrt(k)) ) )
+                val.append(np.random.randint(0,j))
+                wt.append(np.random.randint(0,j)%W)
+                
+            ti.append(solve_pso_knapsack(W, wt, val, j, int(np.sqrt(k)),100 ))
     res = {'size':sz,'time':ti}
     return res
 

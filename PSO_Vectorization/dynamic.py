@@ -48,9 +48,13 @@ def test_Knapsack():
     res = {'size':sz,'time':ti}
     return res
                    
-print(test_Knapsack())
+#print(test_Knapsack())
 
-    
+W = 6
+wt = [1,2,10,200,3]
+val = [2,5,6,1,100]
+print(knapSack( W, wt, val,len(wt)))
+knapSack( 10, [1,20,10,2,2], [5,100,10,100,1],5)
 
    
 
