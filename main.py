@@ -3,6 +3,12 @@ import numpy as np
 from genetic import solve_knapsack, print_generation, Individual
 
 if __name__ == '__main__':
+    ## KNAPSACKs parameters
+    W = 60
+    wt = [7,4,11,8,6,9,4,11,14,3]
+    val = [9,3,10,15,4,5,3,10,18,7]
+    n = 10
+
     y = []
     weights = []
     solutions = []
@@ -10,7 +16,7 @@ if __name__ == '__main__':
     best_fitnesses = [] # meilleurs fitnesses
     elapsed_times = [] # Array of elapsed times
     
-    time, (solution, avg, best_fitness) = solve_knapsack(60, [7,4,11,8,6,9,4,11,14,3], [9,3,10,15,4,5,3,10,18,7], 10)
+    time, (solution, avg, best_fitness) = solve_knapsack(W, wt, val, n)
     print(f"Elapsed time: {time:.5f} seconds")
     y.append(solution.fitness())
     weights.append(solution.weight())
@@ -18,7 +24,7 @@ if __name__ == '__main__':
     
     
     for _ in range(500):
-        time, (solution, avg, best_fitness) = solve_knapsack(60, [7,4,11,8,6,9,4,11,14,3], [9,3,10,15,4,5,3,10,18,7], 10)
+        time, (solution, avg, best_fitness) = solve_knapsack(W, wt, val, n)
         elapsed_times.append(time)
         best_fitnesses.append(max(best_fitness))
         avg_means.append(np.mean(avg))
