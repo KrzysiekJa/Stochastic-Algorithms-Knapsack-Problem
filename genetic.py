@@ -3,18 +3,20 @@ from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
 
+from decorator import bench
+
 
 class Item:
-    def __init__(self, name, weight, value):
-        self.name = name
+    def __init__(self, weight, value):
         self.weight = weight
         self.value = value
 
 
 class Individual:
-    def __init__(self, bits: List[int]):
-        self.bits = bits
-    
+    def __init__(self, bits: List[int], wt: List[int], val: List[int]):
+        self.bits: List[int] = bits
+        self.items: List[Item] = [Item(e[0],e[1]) for e in zip(wt, val)]
+
     def __str__(self):
         return repr(self.bits)
 
@@ -40,39 +42,39 @@ class Individual:
         """
         total_value = 0
         for i in range(len(self.bits)):
-            total_value += self.bits[i]*items[i].value
+            total_value += self.bits[i]*self.items[i].value
         return total_value
     
     def weight(self) -> float:
         total_weight = sum([
             bit * item.weight
-            for item, bit in zip(items, self.bits)
+            for item, bit in zip(self.items, self.bits)
         ])
         return total_weight
         
 
 
-MAX_KNAPSACK_WEIGHT = 60
+# MAX_KNAPSACK_WEIGHT = 60
 CROSSOVER_RATE = 0.53
 MUTATION_RATE = 0.013
 REPRODUCTION_RATE = 0.70
 
-items = [
-    Item("A", 7, 9),
-    Item("B", 4, 3),
-    Item("C", 11, 10),
-    Item("D", 8, 15),
-    Item("E", 6, 4),
-    Item("F", 9, 5),
-    Item("G", 4, 3),
-    Item("H", 11, 10),
-    Item("I", 14, 18),
-    Item("J", 3, 7)
+# items = [
+#     Item("A", 7, 9),
+#     Item("B", 4, 3),
+#     Item("C", 11, 10),
+#     Item("D", 8, 15),
+#     Item("E", 6, 4),
+#     Item("F", 9, 5),
+#     Item("G", 4, 3),
+#     Item("H", 11, 10),
+#     Item("I", 14, 18),
+#     Item("J", 3, 7)
     
-]
+# ]
 
 
-def generate_initial_population(count=6) -> List[Individual]:
+def generate_initial_population(W, wt, val, n, count=6) -> List[Individual]:
     population = set()
 
     # generate initial population having `count` individuals
@@ -81,12 +83,12 @@ def generate_initial_population(count=6) -> List[Individual]:
         # create an individual 
         bits = [
             random.choice([0, 1])
-            for _ in items
+            for _ in range(n)
         ]
-        if not (Individual(bits).weight() <= MAX_KNAPSACK_WEIGHT):
+        if not (Individual(bits, wt, val).weight() <= W):
             continue
 
-        population.add(Individual(bits))
+        population.add(Individual(bits, wt, val))
 
 
     return list(population)
@@ -117,13 +119,13 @@ def selection(population: List[Individual]) -> List[Individual]:
     return parents
 
 
-def crossover(parents: List[Individual]) -> List[Individual]:
-    N = len(items)
+def crossover(parents: List[Individual], wt: List[int], val: List[int], n: int) -> List[Individual]:
+    N = n
 
     child1 = parents[0].bits[:N//2] + parents[1].bits[N//2:]
     child2 = parents[0].bits[N//2:] + parents[1].bits[:N//2]
 
-    return [Individual(child1), Individual(child2)]
+    return [Individual(child1, wt, val), Individual(child2, wt, val)]
 
 
 def mutate(individuals: List[Individual]) -> List[Individual]:
@@ -134,7 +136,7 @@ def mutate(individuals: List[Individual]) -> List[Individual]:
                 individual.bits[i] = ~individual.bits[i]
 
 
-def next_generation(population: List[Individual]) -> List[Individual]:
+def next_generation(population: List[Individual], MAX_KNAPSACK_WEIGHT: int, wt: List[int], val: List[int], n: int) -> List[Individual]:
     next_gen = []
     population = sorted(population, key=lambda i: i.fitness(), reverse=True)
     index1 = population[0].fitness()
@@ -150,7 +152,7 @@ def next_generation(population: List[Individual]) -> List[Individual]:
         else:
             # crossover
             if random.random() < CROSSOVER_RATE:
-                children = crossover(parents)
+                children = crossover(parents, wt, val, n)
             
             # mutation
             if random.random() < MUTATION_RATE:
@@ -192,8 +194,13 @@ def average_fitness(population: List[Individual]) -> float:
     return sum([i.fitness() for i in population]) / len(population)
 
 
-def solve_knapsack() -> tuple[Individual, List[float], List[float]]:
-    population = generate_initial_population()
+# W: int, max weight
+# wt: int[], weights
+# val: int[], values
+# n: int, number of items
+@bench
+def solve_knapsack(W: int, wt: List[int], val: List[int], n: int) -> tuple[Individual, List[float], List[float]]:
+    population = generate_initial_population(W, wt, val, n)
 
     avg_fitnesses = []
     best_fitnesses = []
@@ -202,7 +209,7 @@ def solve_knapsack() -> tuple[Individual, List[float], List[float]]:
         avg_fitnesses.append(average_fitness(population))
         population = sorted(population, key=lambda i: i.fitness(), reverse=True)
         best_fitnesses.append(population[0].fitness())
-        population = next_generation(population)
+        population = next_generation(population, W, wt, val, n)
 
 
     population = sorted(population, key=lambda i: i.fitness(), reverse=True)
@@ -212,7 +219,9 @@ def solve_knapsack() -> tuple[Individual, List[float], List[float]]:
 if __name__ == '__main__':
     
     #for i in range(1):
-    solution, avg, best_fitness = solve_knapsack()
+
+    time, (solution, avg, best_fitness) = solve_knapsack(60, [7,4,11,8,6,9,4,11,14,3], [9,3,10,15,4,5,3,10,18,7], 10)
+    print(f"Elapsed time: {time:.5f} seconds")
     # tab1[i] = solution.fitness()
     # print(solution, solution.fitness())
     # print(avg)

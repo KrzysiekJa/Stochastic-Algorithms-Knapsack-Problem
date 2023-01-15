@@ -8,14 +8,18 @@ if __name__ == '__main__':
     solutions = []
     avg_means = [] # Moyenne des moyennes des fitnesses
     best_fitnesses = [] # meilleurs fitnesses
+    elapsed_times = [] # Array of elapsed times
     
-    solution, avg, best_fitness = solve_knapsack()
+    time, (solution, avg, best_fitness) = solve_knapsack(60, [7,4,11,8,6,9,4,11,14,3], [9,3,10,15,4,5,3,10,18,7], 10)
+    print(f"Elapsed time: {time:.5f} seconds")
     y.append(solution.fitness())
     weights.append(solution.weight())
     solutions.append(solution)
     
+    
     for _ in range(500):
-        solution, avg, best_fitness = solve_knapsack()
+        time, (solution, avg, best_fitness) = solve_knapsack(60, [7,4,11,8,6,9,4,11,14,3], [9,3,10,15,4,5,3,10,18,7], 10)
+        elapsed_times.append(time)
         best_fitnesses.append(max(best_fitness))
         avg_means.append(np.mean(avg))
         if solutions[-1].fitness() < solution.fitness():
@@ -25,7 +29,7 @@ if __name__ == '__main__':
 
     # print(f'Best fitnesses: {best_fitnesses}')
     # print(f'avg weights: {avg_means}')
-        
+    print(f"Elapsed time: {sum(elapsed_times):.5f} seconds")
     x = np.arange(len(solutions))
     #print_generation(solutions)
     fig, (ax1, ax2) = plt.subplots(2, figsize=(10,6))
