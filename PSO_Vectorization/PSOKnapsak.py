@@ -103,8 +103,8 @@ def test_Knapsack():
             wt = []
             sz.append(j)
             for t in range(0,j):
-                val.append(np.random.randint(0,j))
-                wt.append(np.random.randint(0,j)%W)
+                val.append(np.random.randint(1,j))
+                wt.append(np.random.randint(1,j)%W)
                 
             ti.append(solve_pso_knapsack(W, wt, val, j, int(np.sqrt(k)),100 ))
     res = {'size':sz,'time':ti}

@@ -35,36 +35,20 @@ def knapSack_numpy(W, wt, val, n):
                 dp[w] = max(dp[w], dp[w-wt[i-1]]+val[i-1])
     return dp[W]
 
- 
-
-import random
 @bench
-def test_Knapsack():
-    val = []
-    wt = []
-    W = 50
-    ti = []
-    sz = []
-    for i in range(1,6):
-        k = 10**i
-        for j in range(k,k*10,k*10):
-            val = []
-            wt = []
-            sz.append(j)
-            for t in range(0,j):
-                val.append(random.randint(0,j))
-                wt.append(random.randint(0,j)%W)
-            ti.append(knapSack(W, wt, val, j))
-    res = {'size':sz,'time':ti}
-    return res
-                   
-#print(test_Knapsack())
+def knapSack_numpy2(W, wt, val, n):
+    dp = np.zeros(W+1)
+    for i in range(1, n+1):
+        dp[wt[i-1]:] = np.maximum(dp[wt[i-1]:], dp[:-wt[i-1]] + val[i-1])
+        
+    return int(dp[W])
 
+       
+
+#instance of the problem
 W = 6
-wt = [1,2,10,200,3]
-val = [2,5,6,1,100]
-#print(knapSack( W, wt, val,len(wt)))
-
+wt = [1,2,10,200,3,1,1]
+val = [2,5,6,1,100,1,100]
 #knapSack( 10, [1,20,10,2,2], [5,100,10,100,1],5)
 
    
