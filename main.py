@@ -23,7 +23,7 @@ if __name__ == '__main__':
     solutions.append(solution)
     
     
-    for _ in range(50):
+    for _ in range(500):
         time, (solution, avg, best_fitness) = solve_knapsack(W, wt, val, n)
         elapsed_times.append(time)
         best_fitnesses.append(max(best_fitness))

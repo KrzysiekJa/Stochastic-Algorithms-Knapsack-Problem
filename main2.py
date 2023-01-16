@@ -7,7 +7,6 @@ if __name__ == '__main__':
     W = 60
     wt = [7,4,11,8,6,9,4,11,14,3]
     val = [9,3,10,15,4,5,3,10,18,7]
-    n = 10
 
     y = []
     weights = []
@@ -15,27 +14,29 @@ if __name__ == '__main__':
     avg_means = [] # Moyenne des moyennes des fitnesses
     best_fitnesses = [] # meilleurs fitnesses
     elapsed_times = [] # Array of elapsed times
-    
-    time, (solution, best_fitness, fitness_hist_mean,fitness_hist_max, fitness_hist_std,fitness_hist, weight_hist) = solve_knapsack(W, wt, val)
+    last_best_fitness = 0
+
+    time, (solution,solution_weight, ideal_fitness, fitness_hist_mean,fitness_hist_max, fitness_hist_std,fitness_hist, weight_hist) = solve_knapsack(W, wt, val)
     print(f"Elapsed time: {time:.5f} seconds")
-    y.append(best_fitness)
-    #weights.append(solution.weight())
-    solutions.append(solution)
-    last_best_fitness = best_fitness
-    print("last_best_fitness : ", last_best_fitness)
+    if solution_weight <= W:
+        y.append(ideal_fitness)
+        weights.append(solution_weight)
+        solutions.append(solution)
+        last_best_fitness = ideal_fitness
+    print("last_best_fitness : ", ideal_fitness)
     
     
     
-    for _ in range(10):
-        time, (solution, best_fitness, fitness_hist_mean,fitness_hist_max, fitness_hist_std,fitness_hist, weight_hist) = solve_knapsack(W, wt, val)
+    for _ in range(500):
+        time, (solution,solution_weight, ideal_fitness, fitness_hist_mean,fitness_hist_max, fitness_hist_std,fitness_hist, weight_hist) = solve_knapsack(W, wt, val)
         elapsed_times.append(time)
-        best_fitnesses.append(max(best_fitness))
+        best_fitnesses.append(ideal_fitness)
         avg_means.append(np.mean(fitness_hist_mean))
-        if last_best_fitness < best_fitness:
-            y.append(best_fitness)
-            #weights.append(solution.weight())
+        if last_best_fitness < ideal_fitness and solution_weight <= W:
+            y.append(ideal_fitness)
+            weights.append(solution_weight)
             solutions.append(solution)
-            last_best_fitness = best_fitness
+            last_best_fitness = ideal_fitness
 
     # print(f'Best fitnesses: {best_fitnesses}')
     # print(f'avg weights: {avg_means}')
