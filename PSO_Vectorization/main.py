@@ -1,5 +1,6 @@
 from PSOKnapsak import solve_pso_knapsack
 from dynamic import knapSack, knapSack_numpy,knapSack_numpy2
+from genetic import solve_knapsack
 import random
 import math
 import numpy as np
@@ -13,6 +14,7 @@ def test_Knapsack():
     #t_dynamic = []
     t_pso = []
     t_dnumpy2 = []
+    t_genetic = []
     sz = []
     for i in range(1,3):
         k = 10**i
@@ -26,6 +28,22 @@ def test_Knapsack():
 
             t_dnumpy2.append(knapSack_numpy2(W,wt,val,j))
             optimal = t_dnumpy2[i-1][1]
+
+            #Doing different test on the Genetic algorithm
+            values_g = []
+            times_g = []
+            #Repeated test with the same imput values
+            for q in range(0,50):
+                time_g, (solution, best_fitness) = solve_knapsack(W,wt,val)
+                values_g.append(best_fitness[0])
+                times_g.append(time_g)
+            #Computing the mean on values, the standard deviation and the gap with the optimal solution
+            mean_g = np.mean(values_g)
+            mean_t_g = np.mean(times_g)
+            std_g = np.std(values_g)
+            gap_g = (optimal-mean_g)/optimal
+            t_genetic.append({'time_m':mean_t_g,'value_m':mean_g,'value_std':std_g,'gap':gap_g})
+
             #Doing different tests on the same data on the pso algorithm
             values = []
             times = []
@@ -41,9 +59,9 @@ def test_Knapsack():
             gap = (optimal-mean)/optimal
             #The final result in this case is a dictionary with the means of the results
             t_pso.append({'time_m':mean_t,'value_m':mean,'value_std':std,'gap':gap})
-            print(t_dnumpy2)
+            
 
-    res = {'size':sz, 'time_numpy2':t_dnumpy2,'time_PSO':t_pso}
+    res = {'size':sz, 'time_numpy2':t_dnumpy2,'time_PSO':t_pso, "time_G":t_genetic}
     return res
                    
 print(test_Knapsack())
