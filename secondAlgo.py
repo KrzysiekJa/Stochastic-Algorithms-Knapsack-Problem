@@ -22,6 +22,7 @@ initial_population = np.random.randint(2, size = pop_size)
 initial_population = initial_population.astype(int)
 num_generations = 50
 print('Initial population: \n{}'.format(initial_population))
+print(f'Initial population weights: {[np.sum(w) for w in (initial_population*weight)]}')
 
 #if not (Individual(bits).weight() <= knapsack_threshold):
         #    continue
