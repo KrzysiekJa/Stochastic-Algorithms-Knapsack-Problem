@@ -19,11 +19,11 @@ item_number = np.arange(1,11)
 #for i in range(item_number.shape[0]):
 #    print('{0}        {1}        {2}\n'.format(item_number[i], weight[i], value[i]))
     
-solutions_per_pop = 8
-pop_size = (solutions_per_pop, item_number.shape[0])
+#solutions_per_pop = 8
+#pop_size = (solutions_per_pop, item_number.shape[0])
 #print('Population size = {}'.format(pop_size))
-initial_population = np.random.randint(2, size = pop_size)
-initial_population = initial_population.astype(int)
+#initial_population = np.random.randint(2, size = pop_size)
+#initial_population = initial_population.astype(int)
 num_generations = 25
 #print('Initial population: \n{}'.format(initial_population))
 #print(f'Initial population weights: {[np.sum(w) for w in (initial_population*weight)]}')
@@ -108,6 +108,13 @@ def optimize(weight, value, population, pop_size, num_generations, threshold):
 
 @bench
 def solve_knapsack(W: int, wt: List[int], val: List[int]):
+    item_number = np.arange(1, wt.shape[0]+1)
+    solutions_per_pop = 8
+    pop_size = (solutions_per_pop, item_number.shape[0])
+    #print('Population size = {}'.format(pop_size))
+    initial_population = np.random.randint(2, size = pop_size)
+    initial_population = initial_population.astype(int)
+    
     parameters, best_fitness, fitness_history, weight_history = optimize(wt, val, initial_population, pop_size, num_generations, W)
     #print('The optimized parameters for the given inputs are: \n{} with fitness: {} and weight: {} '.format(parameters, np.sum(parameters* value), np.sum(parameters * weight)))
     #print("parameters",parameters[0])

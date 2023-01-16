@@ -16,7 +16,7 @@ def test_Knapsack():
     t_dnumpy2 = []
     t_genetic = []
     sz = []
-    for i in range(1,3):
+    for i in range(1,5):
         k = 10**i
         for j in range(k,k*10,k*10):
             W = int(math.pow(k,2))
