@@ -23,7 +23,7 @@ pop_size = (solutions_per_pop, item_number.shape[0])
 print('Population size = {}'.format(pop_size))
 initial_population = np.random.randint(2, size = pop_size)
 initial_population = initial_population.astype(int)
-num_generations = 75
+num_generations = 25
 print('Initial population: \n{}'.format(initial_population))
 print(f'Initial population weights: {[np.sum(w) for w in (initial_population*weight)]}')
 
@@ -99,30 +99,32 @@ def optimize(weight, value, population, pop_size, num_generations, threshold):
         population[parents.shape[0]:, :] = mutants
         
     print('Last generation: \n{}\n'.format(population)) 
-    fitness_last_gen, _ = cal_fitness(weight, value, population, threshold)      
+    fitness_last_gen, weight_last_gen = cal_fitness(weight, value, population, threshold)      
     print('Fitness of the last generation: \n{}\n'.format(fitness_last_gen))
-    max_fitness = np.where(fitness_last_gen == np.max(fitness_last_gen))
-    parameters.append(population[max_fitness[0][0],:])
-    return parameters, fitness_history, weight_history
+    best_fitness = np.where(fitness_last_gen == np.max(fitness_last_gen))
+    parameters.append(population[best_fitness[0][0],:])
+    return parameters, best_fitness, fitness_history, weight_history
 
 @bench
 def solve_knapsack(W: int, wt: List[int], val: List[int]):
-    parameters, fitness_history, weight_history = optimize(wt, val, initial_population, pop_size, num_generations, W)
-    print('The optimized parameters for the given inputs are: \n{} with fitness: {} and weight: {} '.format(parameters, np.sum(parameters* value), np.sum(parameters * weight)))
+    parameters, best_fitness, fitness_history, weight_history = optimize(wt, val, initial_population, pop_size, num_generations, W)
+    #print('The optimized parameters for the given inputs are: \n{} with fitness: {} and weight: {} '.format(parameters, np.sum(parameters* value), np.sum(parameters * weight)))
+    #print("parameters",parameters[0])
     selected_items = item_number * parameters
-    print('\nSelected items that will maximize the knapsack without breaking it:')
+    #print('\nSelected items that will maximize the knapsack without breaking it:')
     for i in range(selected_items.shape[1]):
         if selected_items[0][i] != 0:
             print('{}\n'.format(selected_items[0][i]))
         
         
     fitness_history_mean = [np.mean(fitness) for fitness in fitness_history]
+    #print("fitness_history_mean : ",fitness_history_mean)
     fitness_history_max = [np.max(fitness) for fitness in fitness_history]
     fitness_history_std = [np.std(fitness) for fitness in fitness_history]
 
-    return fitness_history_mean, fitness_history_max, fitness_history_std, fitness_history, weight_history
+    return parameters, best_fitness[0].tolist(), fitness_history_mean, fitness_history_max, fitness_history_std, fitness_history, weight_history
 
-time, (fitness_history_mean,fitness_history_max, fitness_history_std,fitness_history, weight_history) = solve_knapsack(knapsack_threshold, weight, value)
+time, (solution, best_fitness, fitness_history_mean,fitness_history_max, fitness_history_std,fitness_history, weight_history) = solve_knapsack(knapsack_threshold, weight, value)
 
 print(f'Execution time: {time:.05f} s')
 

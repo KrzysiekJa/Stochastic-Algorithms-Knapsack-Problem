@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from genetic import solve_knapsack, print_generation, Individual
+from genetic2 import solve_knapsack
 
 if __name__ == '__main__':
     ## KNAPSACKs parameters
@@ -16,22 +16,26 @@ if __name__ == '__main__':
     best_fitnesses = [] # meilleurs fitnesses
     elapsed_times = [] # Array of elapsed times
     
-    time, (solution, avg, best_fitness) = solve_knapsack(W, wt, val, n)
+    time, (solution, best_fitness, fitness_hist_mean,fitness_hist_max, fitness_hist_std,fitness_hist, weight_hist) = solve_knapsack(W, wt, val)
     print(f"Elapsed time: {time:.5f} seconds")
-    y.append(solution.fitness())
-    weights.append(solution.weight())
+    y.append(best_fitness)
+    #weights.append(solution.weight())
     solutions.append(solution)
+    last_best_fitness = best_fitness
+    print("last_best_fitness : ", last_best_fitness)
     
     
-    for _ in range(50):
-        time, (solution, avg, best_fitness) = solve_knapsack(W, wt, val, n)
+    
+    for _ in range(10):
+        time, (solution, best_fitness, fitness_hist_mean,fitness_hist_max, fitness_hist_std,fitness_hist, weight_hist) = solve_knapsack(W, wt, val)
         elapsed_times.append(time)
         best_fitnesses.append(max(best_fitness))
-        avg_means.append(np.mean(avg))
-        if solutions[-1].fitness() < solution.fitness():
-            y.append(solution.fitness())
-            weights.append(solution.weight())
+        avg_means.append(np.mean(fitness_hist_mean))
+        if last_best_fitness < best_fitness:
+            y.append(best_fitness)
+            #weights.append(solution.weight())
             solutions.append(solution)
+            last_best_fitness = best_fitness
 
     # print(f'Best fitnesses: {best_fitnesses}')
     # print(f'avg weights: {avg_means}')
@@ -73,4 +77,3 @@ if __name__ == '__main__':
     plt.plot(x, weights)
     plt.show()
     """
-    

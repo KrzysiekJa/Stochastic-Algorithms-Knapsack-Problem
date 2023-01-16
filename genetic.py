@@ -205,7 +205,7 @@ def solve_knapsack(W: int, wt: List[int], val: List[int], n: int) -> tuple[Indiv
     avg_fitnesses = []
     best_fitnesses = []
 
-    for _ in range(200):
+    for _ in range(50):
         avg_fitnesses.append(average_fitness(population))
         population = sorted(population, key=lambda i: i.fitness(), reverse=True)
         best_fitnesses.append(population[0].fitness())
@@ -213,6 +213,9 @@ def solve_knapsack(W: int, wt: List[int], val: List[int], n: int) -> tuple[Indiv
 
 
     population = sorted(population, key=lambda i: i.fitness(), reverse=True)
+    #print("best ind : ",population[0])
+    #print("avg_fitnesses : ",avg_fitnesses)
+    #print("best_fitnesses : ",best_fitnesses)
     return (population[0], avg_fitnesses, best_fitnesses)
 
 
