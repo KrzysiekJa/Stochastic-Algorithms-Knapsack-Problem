@@ -1,12 +1,15 @@
+from typing import List
 import numpy as np
 import pandas as pd
 import random as rd
 from random import randint
 import matplotlib.pyplot as plt
 
+from decorator import bench
+
 item_number = np.arange(1,11)
 weight = np.random.randint(1, 15, size = 10)
-value = np.random.randint(10, 750, size = 10)
+value = np.random.randint(3, 18, size = 10)
 #Maximum weight that the bag of thief can hold 
 knapsack_threshold = 35
 
@@ -20,7 +23,7 @@ pop_size = (solutions_per_pop, item_number.shape[0])
 print('Population size = {}'.format(pop_size))
 initial_population = np.random.randint(2, size = pop_size)
 initial_population = initial_population.astype(int)
-num_generations = 50
+num_generations = 75
 print('Initial population: \n{}'.format(initial_population))
 print(f'Initial population weights: {[np.sum(w) for w in (initial_population*weight)]}')
 
@@ -36,7 +39,7 @@ def cal_fitness(weight, value, population, threshold):
             fitness[i] = S1
         else :
             fitness[i] = 0 
-    return fitness.astype(int) 
+    return fitness.astype(int), S2
 
 def selection(fitness, num_parents, population):
     fitness = list(fitness)
@@ -82,12 +85,13 @@ def mutation(offsprings):
     return mutants
 
 def optimize(weight, value, population, pop_size, num_generations, threshold):
-    parameters, fitness_history = [], []
+    parameters, fitness_history, weight_history = [], [], []
     num_parents = int(pop_size[0]/2)
     num_offsprings = pop_size[0] - num_parents 
     for i in range(num_generations):
-        fitness = cal_fitness(weight, value, population, threshold)
+        fitness, population_weight = cal_fitness(weight, value, population, threshold)
         fitness_history.append(fitness)
+        weight_history.append(population_weight)
         parents = selection(fitness, num_parents, population)
         offsprings = crossover(parents, num_offsprings)
         mutants = mutation(offsprings)
@@ -95,25 +99,37 @@ def optimize(weight, value, population, pop_size, num_generations, threshold):
         population[parents.shape[0]:, :] = mutants
         
     print('Last generation: \n{}\n'.format(population)) 
-    fitness_last_gen = cal_fitness(weight, value, population, threshold)      
+    fitness_last_gen, _ = cal_fitness(weight, value, population, threshold)      
     print('Fitness of the last generation: \n{}\n'.format(fitness_last_gen))
     max_fitness = np.where(fitness_last_gen == np.max(fitness_last_gen))
     parameters.append(population[max_fitness[0][0],:])
-    return parameters, fitness_history
+    return parameters, fitness_history, weight_history
 
-parameters, fitness_history = optimize(weight, value, initial_population, pop_size, num_generations, knapsack_threshold)
-print('The optimized parameters for the given inputs are: \n{}'.format(parameters))
-selected_items = item_number * parameters
-print('\nSelected items that will maximize the knapsack without breaking it:')
-for i in range(selected_items.shape[1]):
-  if selected_items[0][i] != 0:
-     print('{}\n'.format(selected_items[0][i]))
-     
-     
-fitness_history_mean = [np.mean(fitness) for fitness in fitness_history]
-fitness_history_max = [np.max(fitness) for fitness in fitness_history]
+@bench
+def solve_knapsack(W: int, wt: List[int], val: List[int]):
+    parameters, fitness_history, weight_history = optimize(wt, val, initial_population, pop_size, num_generations, W)
+    print('The optimized parameters for the given inputs are: \n{} with fitness: {} and weight: {} '.format(parameters, np.sum(parameters* value), np.sum(parameters * weight)))
+    selected_items = item_number * parameters
+    print('\nSelected items that will maximize the knapsack without breaking it:')
+    for i in range(selected_items.shape[1]):
+        if selected_items[0][i] != 0:
+            print('{}\n'.format(selected_items[0][i]))
+        
+        
+    fitness_history_mean = [np.mean(fitness) for fitness in fitness_history]
+    fitness_history_max = [np.max(fitness) for fitness in fitness_history]
+    fitness_history_std = [np.std(fitness) for fitness in fitness_history]
+
+    return fitness_history_mean, fitness_history_max, fitness_history_std, fitness_history, weight_history
+
+time, (fitness_history_mean,fitness_history_max, fitness_history_std,fitness_history, weight_history) = solve_knapsack(knapsack_threshold, weight, value)
+
+print(f'Execution time: {time:.05f} s')
+
 plt.plot(list(range(num_generations)), fitness_history_mean, label = 'Mean Fitness')
 plt.plot(list(range(num_generations)), fitness_history_max, label = 'Max Fitness')
+plt.plot(list(range(num_generations)), fitness_history_std, label = 'Fitness stds')
+plt.plot(list(range(num_generations)), weight_history, label = 'Weights')
 plt.legend()
 plt.title('Fitness through the generations')
 plt.xlabel('Generations')
