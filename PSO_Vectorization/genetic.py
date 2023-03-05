@@ -9,27 +9,8 @@ from decorator import bench
 from PSOKnapsak import fitness_function
 
 item_number = np.arange(1,11)
-#weight = np.random.randint(1, 15, size = 10)
-#value = np.random.randint(3, 18, size = 10)
-#Maximum weight that the bag of thief can hold 
-#knapsack_threshold = 100
-
-#print('The list is as follows:')
-#print('Item No.    Weight    Value')
-#for i in range(item_number.shape[0]):
-#    print('{0}        {1}        {2}\n'.format(item_number[i], weight[i], value[i]))
-    
-#solutions_per_pop = 8
-#pop_size = (solutions_per_pop, item_number.shape[0])
-#print('Population size = {}'.format(pop_size))
-#initial_population = np.random.randint(2, size = pop_size)
-#initial_population = initial_population.astype(int)
 num_generations = 25
-#print('Initial population: \n{}'.format(initial_population))
-#print(f'Initial population weights: {[np.sum(w) for w in (initial_population*weight)]}')
 
-#if not (Individual(bits).weight() <= knapsack_threshold):
-        #    continue
 
 def cal_fitness(weight, value, population, threshold):
     fitness = np.empty(population.shape[0])
@@ -99,9 +80,7 @@ def optimize(weight, value, population, pop_size, num_generations, threshold):
         population[0:parents.shape[0], :] = parents
         population[parents.shape[0]:, :] = mutants
         
-    #print('Last generation: \n{}\n'.format(population)) 
     fitness_last_gen, weight_last_gen = cal_fitness(weight, value, population, threshold)      
-    #print('Fitness of the last generation: \n{}\n'.format(fitness_last_gen))
     best_fitness = np.where(fitness_last_gen == np.max(fitness_last_gen))
     parameters.append(population[best_fitness[0][0],:])
     return parameters, best_fitness, fitness_history, weight_history
@@ -111,22 +90,15 @@ def solve_knapsack(W: int, wt: List[int], val: List[int]):
     item_number = np.arange(1, wt.shape[0]+1)
     solutions_per_pop = 8
     pop_size = (solutions_per_pop, item_number.shape[0])
-    #print('Population size = {}'.format(pop_size))
     initial_population = np.random.randint(2, size = pop_size)
     initial_population = initial_population.astype(int)
     
     parameters, best_fitness, fitness_history, weight_history = optimize(wt, val, initial_population, pop_size, num_generations, W)
-    #print('The optimized parameters for the given inputs are: \n{} with fitness: {} and weight: {} '.format(parameters, np.sum(parameters* value), np.sum(parameters * weight)))
-    #print("parameters",parameters[0])
+    
     selected_items = item_number * parameters
-    #print('\nSelected items that will maximize the knapsack without breaking it:')
-    #for i in range(selected_items.shape[1]):
-    #    if selected_items[0][i] != 0:
-    #        print('{}\n'.format(selected_items[0][i]))
-        
-        
+    
+    
     fitness_history_mean = [np.mean(fitness) for fitness in fitness_history]
-    #print("fitness_history_mean : ",fitness_history_mean)
     fitness_history_max = [np.max(fitness) for fitness in fitness_history]
     fitness_history_std = [np.std(fitness) for fitness in fitness_history]
 
@@ -136,7 +108,3 @@ def solve_knapsack(W: int, wt: List[int], val: List[int]):
 
     return parameters,fitness_value
 
-#time, (solution, fit_value) = solve_knapsack(knapsack_threshold, weight, value)
-#print("LAST ----- LAST ")
-#print(time, (solution, fit_value[0]))
-#print("\n\n\n\ "+str(fitness_function(solution,weight,value,knapsack_threshold)))
