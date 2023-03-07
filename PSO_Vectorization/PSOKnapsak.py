@@ -5,7 +5,6 @@ from decorator import bench
 
 
 
-#introduce a flexible penality, exponential scaling, take the exponetial value instead the normal fitness it should grow faster
 def fitness_function( x, w, v, W ):
     if( np.dot(x,w) <= W ):
         return np.dot(x,v)
@@ -29,9 +28,6 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
     GLOBAL_BEST = np.zeros(n, dtype=np.int8)
 
     swarm = []
-    # Random Generating the xi in the particles
-    # Initializing the local minimum in the swarm
-    # find the global solution inside the swarm
     for _ in range(n_particles):
         position = np.random.randint( 2, dtype=np.int8, size=n ) # random binary array
         
@@ -43,8 +39,6 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
         # particles has position, best_pos, velocity
         swarm.append( dict( zip(particle_params, [position, position, np.random.rand(n)]) ) )
     
-    #print( ">> ", GLOBAL_BEST_VAL )
-    #print( "## ", GLOBAL_BEST )
     
     for _ in range(epochs):
         for particle in swarm:
@@ -77,16 +71,14 @@ def solve_pso_knapsack( W, wt, val, n, n_particles, epochs = 5, C1 = 2.0, C2 = 2
             np.random.shuffle( matation_arr )
             particle['POSITION'] = np.where( matation_arr, GLOBAL_BEST, particle['POSITION'] )
             
-    #print( ">> ", GLOBAL_BEST_VAL )
-    #print( "## ", GLOBAL_BEST )
     return GLOBAL_BEST_VAL
 
-W = 6
-wt = [1,2,10,200,3]
-val = [2,5,6,1,100]
+#W = 6
+#wt = [1,2,10,200,3]
+#val = [2,5,6,1,100]
 
 #print(solve_pso_knapsack( W, wt, val, 5,5,4))
-solve_pso_knapsack( 10, [1,20,10,2,2], [5,100,10,100,1], 5, 2 )
+#solve_pso_knapsack( 10, [1,20,10,2,2], [5,100,10,100,1], 5, 2 )
 
 
 

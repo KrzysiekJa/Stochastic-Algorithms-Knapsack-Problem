@@ -10,7 +10,6 @@ def bench(func):
         res = func(*args)
         end_time = time.perf_counter()
         run_time = end_time - start_time
-        
         return run_time,res
     
     return wrapper_brench

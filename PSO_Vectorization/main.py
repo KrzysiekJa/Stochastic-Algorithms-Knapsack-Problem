@@ -60,7 +60,6 @@ def test_Knapsack():
             #The final result in this case is a dictionary with the means of the results
             t_pso.append({'time_m':mean_t,'value_m':mean,'value_std':std,'gap':gap})
             
-
     res = {'size':sz, 'time_numpy2':t_dnumpy2,'time_PSO':t_pso, "time_G":t_genetic}
     return res
                    

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from decorator import bench
 from PSOKnapsak import fitness_function
 
+
 item_number = np.arange(1,11)
 num_generations = 25
 
@@ -23,6 +24,7 @@ def cal_fitness(weight, value, population, threshold):
             fitness[i] = 0 
     return fitness.astype(int), S2
 
+
 def selection(fitness, num_parents, population):
     fitness = list(fitness)
     parents = np.empty((num_parents, population.shape[1]))
@@ -32,11 +34,13 @@ def selection(fitness, num_parents, population):
         fitness[max_fitness_idx[0][0]] = -999999
     return parents
 
+
 def crossover(parents, num_offsprings):
     offsprings = np.empty((num_offsprings, parents.shape[1]))
     crossover_point = int(parents.shape[1]/2)
     crossover_rate = 0.8
-    i=0
+    i = 0
+    
     while (parents.shape[0] < num_offsprings):
         parent1_index = i%parents.shape[0]
         parent2_index = (i+1)%parents.shape[0]
@@ -47,7 +51,8 @@ def crossover(parents, num_offsprings):
         parent2_index = (i+1)%parents.shape[0]
         offsprings[i,0:crossover_point] = parents[parent1_index,0:crossover_point]
         offsprings[i,crossover_point:] = parents[parent2_index,crossover_point:]
-        i=+1
+        i =+ 1
+    
     return offsprings 
 
 
@@ -62,9 +67,10 @@ def mutation(offsprings):
         int_random_value = randint(0,offsprings.shape[1]-1)    
         if mutants[i,int_random_value] == 0 :
             mutants[i,int_random_value] = 1
-        else :
+        else:
             mutants[i,int_random_value] = 0
     return mutants
+
 
 def optimize(weight, value, population, pop_size, num_generations, threshold):
     parameters, fitness_history, weight_history = [], [], []
@@ -85,6 +91,7 @@ def optimize(weight, value, population, pop_size, num_generations, threshold):
     parameters.append(population[best_fitness[0][0],:])
     return parameters, best_fitness, fitness_history, weight_history
 
+
 @bench
 def solve_knapsack(W: int, wt: List[int], val: List[int]):
     item_number = np.arange(1, wt.shape[0]+1)
@@ -97,12 +104,9 @@ def solve_knapsack(W: int, wt: List[int], val: List[int]):
     
     selected_items = item_number * parameters
     
-    
     fitness_history_mean = [np.mean(fitness) for fitness in fitness_history]
     fitness_history_max = [np.max(fitness) for fitness in fitness_history]
     fitness_history_std = [np.std(fitness) for fitness in fitness_history]
-
-    
     
     fitness_value = fitness_function(parameters,wt,val,W)
 
